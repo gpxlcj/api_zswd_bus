@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>车辆测试</title>
+    </head>
+    <body>
+        <form action="/bus/buildnewbus/" method="POST">
+            <input type = "text" name = "bus_id">
+            <input type = "submit" value = "确定">
+        </form>
+        <form action="http://127.0.0.1:8080/bus/getbusposition/" method="GET">
+            <li>bus_id<input type = "text" name = "bus_id"></li>
+            <li>经度<input type = "text" name = "latitude"></li>
+            <li>纬度<input type = "text" name = "longitude"></li>
+            <li>时间<input type = "text" name = "time"></li>
+            <li><input type = "submit" value = "确定"></li>
+        </form>
+    </body>
+
+</html>
