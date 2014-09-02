@@ -1,6 +1,8 @@
 # -*-coding:utf-8 -*-
 import socket
 import struct
+import MySQLdb
+
 '''
 HOST = '0.0.0.0'
 PORT = 8080
@@ -16,6 +18,13 @@ class DataStruct:
     data_type = ''
     def __init__(self, temp_type):
         data_type = temp_type
+
+def datasave(data):
+    con = MySQLdb.connect(host='localhost', user='root', passwd='ggxyz1993',db='api', charset='utf8')
+    cursor = con.cursor()
+    excute_coordinate_create = '''INSERT bus_coordinate
+    (longtitude,latitude,time,bus_number)VALUES'''+str(longitude)+str(latitude)+"'"+str(datetime)+"'"+str(bus_number)
+    excute_bus_select = ''
 
 
 def packdata(data):
@@ -39,7 +48,6 @@ def packdata(data):
     get_data_type = struct.Struct('bb').unpack(data)
     if get_data_type[0]==104 and get_data_type[1]==104:
         print 'ok'
-        return (0,0)
     else:
         return (0,0)
     form_string = start.data_type+length.data_type+LAC.data_type+terminal_id.data_type+info_code.data_type+agreement_code.data_type+\
