@@ -55,7 +55,11 @@ def update_bus_route(data, bus):
 
 def datasave(data):
     try:
-        bus = Bus.objects.get(number= data['bus_number'])
+        try:
+            bus = Bus.objects.get(number= data['bus_number'])
+        except:
+            route = Route.objects.get(id=1)
+            bus = Bus(number = data['bus_number'], route=route)
         update_bus_coordinate(data, bus)
         update_bus_route(data, bus)
         update_bus_stop(data, bus)
@@ -81,7 +85,6 @@ def packdata(data):
     status = DataStruct('bbbb')
     end = DataStruct('bb')
     print data,type(data)
-#    get_data_type = struct.Struct('bb').unpack(data)
     if data[0]=='h' and data[1]=='h':
         print 'ok'
     else:
@@ -91,10 +94,6 @@ def packdata(data):
     else:
         return (0,0)
     
-#    form_string = start.data_type+length.data_type+LAC.data_type+terminal_id.data_type+info_code.data_type+agreement_code.data_type+\
-#           datetime.data_type+latitude.data_type+longitude.data_type+speed.data_type+\
-#           direction.data_type+MNC.data_type+cell_id.data_type+\
-#           status.data_type+end.data_type
     form_string = 'b'*42
     print form_string
     packed_data = struct.unpack(form_string, data)
@@ -152,6 +151,32 @@ def main():
             tcpCliSock.close()
     tcpSerSock.close()
 
+from SocketServer import ThreadingTCPServer, StreamRequestHandler
+import traceback
+
+class BusStreamRequestHandler(StreamRequestHandler):
+    def handle(self):
+        while True:
+            try:
+#                data = self.rfile.readline()
+                data = self.request.recv(1024)
+                print len(data)
+                print "receive from (%r):%r" %(self.client_address, data)
+                packed_data = packdata(data)
+                if packed_data[0]==104 and packed_data[1]==104:
+                    print 'ok'
+                elif packed_data[0]==0 and packed_data[1]==0:
+                    response_str = 'bbbbb'
+                    response_data = struct.pack(response_str, 84, 104, 26, 0, 10)
+                    self.request.sendall(response_data)
+                else:
+                    pass
+            except:
+                traceback.print_exc()
+                break
+
+
+
 
 
 if __name__ == '__main__':
@@ -160,5 +185,10 @@ if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'zq_bus.settings'
     from zq_bus import settings
     from bus.models import *
-    main()
-
+    HOST = '127.0.0.1'
+    PORT = 8080
+    BUFSIZ = 1024
+    ADDR = (HOST, PORT)
+    server = ThreadingTCPServer(ADDR, BusStreamRequestHandler)
+    server.serve_forever()
+#    main()
