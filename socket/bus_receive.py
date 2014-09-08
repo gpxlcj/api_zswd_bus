@@ -103,9 +103,9 @@ def packdata(data):
     for i in range(5,13):
         bus_number += str(packed_data[i])
     latitude = packed_data[22]*(256**3)+packed_data[23]*(256**2)+packed_data[24]*256+packed_data[25]
-    latitude = (latitude+0.0)/3000
+    latitude = (latitude+0.0)/30000
     longitude = packed_data[26]*(256**3)+packed_data[27]*(256**2)+packed_data[28]*256+packed_data[29]
-    longitude = (longitude+0.0)/3000
+    longitude = (longitude+0.0)/30000
     data = {
             'bus_number':bus_number,
             'latitude':latitude,

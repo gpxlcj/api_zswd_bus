@@ -2,8 +2,8 @@
 import socket
 import struct
 
-HOST = '127.0.0.1'
-PORT = 8080
+HOST = '115.29.17.73'
+PORT = 22333
 BUFSIZ = 1024
 ADDR = (HOST,PORT)
 

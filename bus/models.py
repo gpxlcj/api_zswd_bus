@@ -71,10 +71,10 @@ class Stop(models.Model):
 #校车类
 class Bus(models.Model):
     
-    route = models.ForeignKey(Route, verbose_name=u'路线')
+    route = models.ForeignKey(Route, verbose_name=u'路线', blank=True)
 #    route = models.PositiveIntegerField(u'路线', default=0)
     coordinate = models.OneToOneField(Coordinate, verbose_name=u'当前坐标', blank=True)
-    stop = models.ForeignKey(Stop, verbose_name=u'站点', default=0)
+    stop = models.ForeignKey(Stop, verbose_name=u'站点', blank=True)
     number = models.CharField(max_length=100, verbose_name=u'车辆代号')
     class Meta:
         verbose_name = u'校车'
@@ -90,14 +90,18 @@ class Bus(models.Model):
             new_coordinate = Coordinate(longitude=request.POST.get(RECEIVE_BUS_LONGITUDE),
                                         latitude=request.POST.get(RECEIVE_BUS_LATITUDE),
                                         bus_number=request.POST.get(RECEIVE_BUS_ID))
+            new_coordinate.save()
             self.coordinate = new_coordinate
+            self.save()
             ans = 1
         elif request.method == 'GET':
 
             new_coordinate = Coordinate(longitude=request.GET.get(RECEIVE_BUS_LONGITUDE),
                                         latitude=request.GET.get(RECEIVE_BUS_LATITUDE),
                                         bus_number=request.GET.get(RECEIVE_BUS_ID))
+            new_coordinate.save()
             self.coordinate = new_coordinate
+            self.save()
             ans = 1
         else:
             ans = 0
