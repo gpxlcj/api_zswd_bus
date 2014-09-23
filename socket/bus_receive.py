@@ -104,9 +104,9 @@ def packdata(data):
         bus_number += str(packed_data[i])
 
     latitude = packed_data[22]*(256**3)+packed_data[23]*(256**2)+packed_data[24]*256+packed_data[25]
-    latitude = (latitude+0.0)/3000
+    latitude = (latitude+0.0)/30000
     longitude = packed_data[26]*(256**3)+packed_data[27]*(256**2)+packed_data[28]*256+packed_data[29]
-    longitude = (longitude+0.0)/3000
+    longitude = (longitude+0.0)/30000
     transform_url = "http://api.map.baidu.com/geoconv/v1/?coords="+str(longitude)+\
     str(latitude)+","+str(longitude)+"&from=1&to=5&ak=7yTvUeESUHB7GTw9Pb9BRv1U"
     print transform_url
