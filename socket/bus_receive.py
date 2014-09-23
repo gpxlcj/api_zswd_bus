@@ -3,7 +3,7 @@ import socket
 import struct
 import MySQLdb
 import os, sys
-
+import urllib
 
 '''
 HOST = '0.0.0.0'
@@ -94,7 +94,7 @@ def packdata(data):
     else:
         return (0,0)
     
-    form_string = 'b'*42
+    form_string = 'B'*42
     print form_string
     packed_data = struct.unpack(form_string, data)
   #  data_save()
@@ -102,10 +102,22 @@ def packdata(data):
     bus_number = ''
     for i in range(5,13):
         bus_number += str(packed_data[i])
+
     latitude = packed_data[22]*(256**3)+packed_data[23]*(256**2)+packed_data[24]*256+packed_data[25]
-    latitude = (latitude+0.0)/30000
+    latitude = (latitude+0.0)/3000
     longitude = packed_data[26]*(256**3)+packed_data[27]*(256**2)+packed_data[28]*256+packed_data[29]
-    longitude = (longitude+0.0)/30000
+    longitude = (longitude+0.0)/3000
+    transform_url = "http://api.map.baidu.com/geoconv/v1/?coords="+str(longitude)+\
+    str(latitude)+","+str(longitude)+"&from=1&to=5&ak=7yTvUeESUHB7GTw9Pb9BRv1U"
+    print transform_url
+    transform_data = urllib.urlopen(transform_url).read()
+    print transform_data
+    try:
+        transform_data = eval(transform_data)['result'][0]
+        latitude = transform_data['y']
+        longitude = transform_data['x'] 
+    except:
+        print 'error'
     data = {
             'bus_number':bus_number,
             'latitude':latitude,
