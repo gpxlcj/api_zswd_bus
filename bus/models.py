@@ -8,13 +8,15 @@ RECEIVE_BUS_LATITUDE = 'latitude'
 RECEIVE_BUS_LONGITUDE = 'longitude'
 
 
+
 #坐标类
 class Coordinate(models.Model):
 
     longitude = models.FloatField(u'经度')
     latitude = models.FloatField(u'纬度')
-    time = models.DateTimeField(u'时间', auto_now=True, blank = True)
-    bus_number = models.CharField(u'所属车辆', max_length=100, blank = True)
+    time = models.DateTimeField(u'时间', auto_now=True, blank=True)
+    bus_number = models.CharField(u'所属车辆', max_length=100, blank=True)
+    bus_route = models.CharField(u'所属路线', max_length=100, blank=True)
     
     class Meta:
         verbose_name = u'坐标'
@@ -22,6 +24,17 @@ class Coordinate(models.Model):
 
     def __unicode__(self):
         return "%d" % self.id
+
+#测试坐标类
+class TestCoordinate(models.Model):
+
+    longitude = models.FloatField(verbose_name=u'经度')
+    latitude = models.FloatField(verbose_name=u'纬度')
+    time = models.DateTimeField(u'时间', auto_now=True, blank=True)
+
+    class Meta:
+        verbose_name = u'测试坐标'
+        verbose_name_plural = u'测试坐标类'
 #特征点坐标类
 class SpecialCoordinate(models.Model):
 
@@ -72,7 +85,6 @@ class Stop(models.Model):
 class Bus(models.Model):
     
     route = models.ForeignKey(Route, verbose_name=u'路线', blank=True)
-#    route = models.PositiveIntegerField(u'路线', default=0)
     coordinate = models.OneToOneField(Coordinate, verbose_name=u'当前坐标', blank=True)
     stop = models.ForeignKey(Stop, verbose_name=u'站点', blank=True)
     number = models.CharField(max_length=100, verbose_name=u'车辆代号')
