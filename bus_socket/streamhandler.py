@@ -91,15 +91,18 @@ class BusStreamRequestHandler(StreamRequestHandler):
             except:
                 route = Route.objects.get(id=1)
                 bus = Bus(number = data['bus_number'], route=route)
-            self.update_bus_coordinate(data, bus)
-            self.update_bus_route(data, bus)
-            self.update_bus_stop(data, bus)
-            print 'update success'
+            try:
+                self.update_bus_coordinate(data, bus)
+                self.update_bus_route(data, bus)
+                self.update_bus_stop(data, bus)
+                print 'update success'
+            except:
+                pass
         except:
             pass
 
     def temp_save(self, data):
-        test_coordinate = TestCoordinate(latitude=data['latitude'], longitude=['longitude'])
+        test_coordinate = TestCoordinate(latitude=data['latitude'], longitude=data['longitude'])
         test_coordinate.save()
         print 'time:', test_coordinate.time, '; lat:', test_coordinate.latitude, '; lont:', test_coordinate.longitude
 
@@ -134,7 +137,10 @@ class BusStreamRequestHandler(StreamRequestHandler):
 
         form_string = 'B' * 42
         print form_string
-        packed_data = struct.unpack(form_string, data)
+        try:
+            packed_data = struct.unpack(form_string, data)
+        except:
+            return (0, 0)
         print packed_data
         bus_number = str()
         for i in range(5, 13):
