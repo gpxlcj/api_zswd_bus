@@ -1,3 +1,4 @@
+#! -*- coding:utf-8 -*-
 import traceback
 import socket
 import struct
@@ -5,12 +6,19 @@ import MySQLdb
 import os
 import sys
 import urllib
+
+PROJECT_DIR_PATH = '/home/gpxlcj/zq_project/zq_bus'
+sys.path.append(PROJECT_DIR_PATH)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'zq_bus.settings'
+
 from lib.hexadecimal_deal import DataStruct
+from zq_bus import settings
+from bus.models import *
 
 from SocketServer import ThreadingTCPServer, StreamRequestHandler
 
 
-class BUsStreamRequestHandler(StreamRequestHandler):
+class BusStreamRequestHandler(StreamRequestHandler):
 
     packed_data = str()
 
@@ -28,17 +36,54 @@ class BUsStreamRequestHandler(StreamRequestHandler):
             self.request.sendall(response_data)
         else:
             pass
+    def update_bus_coordinate(self, data, bus):
+        '''
+        更新车辆坐标
+        '''
 
-    def save(self):
+        coordinate = Coordinate(longitude=data['longitude'],
+        latitude=data['latitude'],bus_number=data['bus_number'])
+        coordinate.save()
+        bus.coordinate = coordinate
+        bus.save()
+
+    def update_bus_stop(self, data, bus):
+        '''
+        更新车站
+        '''
+
+        MAX_LENGTH = 21000000
+
+        stops = Stop.objects.filter(route=bus.route)
+        distance = MAX_LENGTH
+        for stop in stops:
+            temp_distance = ((bus.coordinate.latitude - stop.latitude)**2+\
+               (bus.coordinate.longitude - stop.longitude)**2)
+            if distance < temp_distance:
+                bus.stop = stop
+        bus.save()
+
+    def update_bus_route(self, data, bus):
+        '''
+        更新车辆路线
+        '''
+
+        ERROR_VALUE =0.000006
+
+        routes = Route.objects.all()
+        for r in routes:
+            if (abs(r.special_coordinate.latitude - data['latitude'])<ERROR_VALUE)\
+                and (abs(r.special_coordinate.longitude -
+                data['longitude']<ERROR_VALUE)):
+
+                bus.route = r
+        bus.save()
+
+
+    def save(self, data):
         '''
         数据库存储
         '''
-
-        PROJECT_DIR_PATH = '/home/gpxlcj/zq_project/zq_bus'
-        sys.path.append(PROJECT_DIR_PATH)
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'zq_bus.settings'
-        from zq_bus import settings
-        from bus.models import *
 
         try:
             try:
@@ -46,15 +91,20 @@ class BUsStreamRequestHandler(StreamRequestHandler):
             except:
                 route = Route.objects.get(id=1)
                 bus = Bus(number = data['bus_number'], route=route)
-            update_bus_coordinate(data, bus)
-            update_bus_route(data, bus)
-            update_bus_stop(data, bus)
+            self.update_bus_coordinate(data, bus)
+            self.update_bus_route(data, bus)
+            self.update_bus_stop(data, bus)
             print 'update success'
         except:
             pass
 
+    def temp_save(self, data):
+        test_coordinate = TestCoordinate(latitude=data['latitude'], longitude=['longitude'])
+        test_coordinate.save()
+        print 'time:', test_coordinate.time, '; lat:', test_coordinate.latitude, '; lont:', test_coordinate.longitude
 
-    def packdata(data):
+
+    def packdata(self, data):
 
         start = DataStruct('bb')
         length = DataStruct('b')
@@ -111,7 +161,13 @@ class BUsStreamRequestHandler(StreamRequestHandler):
             'longitude': longitude,
         }
         print data
-        self.save(data)
+
+        #存储更新坐标数据
+        #self.save(data)
+
+        #测试坐标数据
+        self.temp_save(data)
+
         return packed_data
 
 
@@ -122,7 +178,7 @@ class BUsStreamRequestHandler(StreamRequestHandler):
                 data = self.request.recv(1024)
                 print len(data)
                 print "receive from (%r):%r" %(self.client_address, data)
-                self.packed_data = packdata(data)
+                self.packed_data = self.packdata(data)
                 self.judge_data_type()
             except:
                 traceback.print_exc()
