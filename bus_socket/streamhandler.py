@@ -165,8 +165,9 @@ class BusStreamRequestHandler(StreamRequestHandler):
 #        except:
 #            print 'error'
 #       高德地图API
+        latitude = 33.12231;longitude = 123.222142
         transform_url = "http://api.zdoz.net/transgps.aspx?"+ \
-        "lat=" + str(latitude) + "lng=" + str(longitude)
+        "lat=" + str(latitude) + "&lng=" + str(longitude)
         print transform_url
         transform_data = urllib.urlopen(transform_url).read()
         print transform_data
