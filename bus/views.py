@@ -110,6 +110,7 @@ APP接收端
 #返回校车数据
 def get_bus_info(request):
     if request.method == 'POST':
+
         route_id = int(request.POST.get('route_id'))
         route = Route.objects.get(id=route_id)
         buses = Bus.objects.filter(route=route)
