@@ -110,30 +110,33 @@ APP接收端
 #返回校车数据
 def get_bus_info(request):
     if request.method == 'POST':
-
-        route_id = int(request.POST.get('route_id'))
-        route = Route.objects.get(id=route_id)
-        buses = Bus.objects.filter(route=route)
-        data = dict()
-        a = list()
-        num = 0
-        for i in buses:
-            temp = {
-                'id': i.number,
-                'route_id': route_id,
-                'longitude': i.coordinate.longitude,
-                'latitude': i.coordinate.latitude,
-                'stop': i.stop.name,
-                'arrive_time': i.stop.arrive_time,
+        try:
+            route_id = int(request.POST.get('route_id'))
+            route = Route.objects.get(id=route_id)
+            buses = Bus.objects.filter(route=route)
+            data = dict()
+            a = list()
+            num = 0
+            for i in buses:
+                temp = {
+                    'id': i.number,
+                    'route_id': route_id,
+                    'longitude': i.coordinate.longitude,
+                    'latitude': i.coordinate.latitude,
+                    'stop': i.stop.name,
+                    'arrive_time': i.stop.arrive_time,
+                }
+                a.append(temp)
+                num += 1
+            data = {
+                'status': 1,
+                'bus_info': a,
+                'num': num,
             }
-            a.append(temp)
-            num += 1
-        data = {
-            'status': 1,
-            'bus_info': a,
-            'num': num,
-        }
-        return render_to_json(data)
+            return render_to_json(data)
+        except:
+            status = return_status(0)
+            return render_to_json(status)
     elif request.method == 'GET':
         try:
             route_id = int(request.GET.get('route_id'))
