@@ -150,15 +150,30 @@ class BusStreamRequestHandler(StreamRequestHandler):
         latitude = (latitude + 0.0) / 30000
         longitude = packed_data[26] * (256 ** 3) + packed_data[27] * (256 ** 2) + packed_data[28] * 256 + packed_data[29]
         longitude = (longitude + 0.0) / 30000
-        transform_url = "http://api.map.baidu.com/geoconv/v1/?coords=" + str(longitude) + \
-                    str(latitude) + "," + str(longitude) + "&from=1&to=5&ak=7yTvUeESUHB7GTw9Pb9BRv1U"
+
+#       百度地图API
+#        transform_url = "http://api.map.baidu.com/geoconv/v1/?coords=" + str(longitude) + \
+#                    str(latitude) + "," + str(longitude) + "&from=1&to=5&ak=7yTvUeESUHB7GTw9Pb9BRv1U"
+
+#        print transform_url
+#        transform_data = urllib.urlopen(transform_url).read()
+#        print transform_data
+#        try:
+#            transform_data = eval(transform_data)['result'][0]
+#            latitude = transform_data['y']
+#            longitude = transform_data['x']
+#        except:
+#            print 'error'
+#       高德地图API
+        transform_url = "http://api.zdoz.net/transgps.aspx?"+ \
+        "lat=" + str(latitude) + "lng=" + str(longitude)
         print transform_url
         transform_data = urllib.urlopen(transform_url).read()
         print transform_data
         try:
-            transform_data = eval(transform_data)['result'][0]
-            latitude = transform_data['y']
-            longitude = transform_data['x']
+            transform_data = eval(transform_data)
+            latitude = transform_data['Lng']
+            longitude = transform_data['Lat']
         except:
             print 'error'
         data = {
