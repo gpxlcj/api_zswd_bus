@@ -86,6 +86,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_ROOT = (
+
+    ("css", os.path.join(STATIC_ROOT, 'css')),
+    ("js", os.path.join(STATIC_ROOT, 'js')),
+    ("img", os.path.join(STATIC_ROOT, 'img')),
+)
+
 #设定校车定位边界
 OUT_WORK_STATUS = -1
 MAX_LATITUDE = 30.9

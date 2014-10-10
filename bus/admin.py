@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Bus, Stop, Route, Coordinate,SpecialCoordinate
+from models import Bus, Stop, Route, Coordinate, SpecialCoordinate, TestCoordinate
 # Register your models here.
 
 class BusAdmin(admin.ModelAdmin):
@@ -13,10 +13,14 @@ class StopAdmin(admin.ModelAdmin):
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('departure_stop', 'final_stop')
 
+class SpecialCoAdmin(admin.ModelAdmin):
+    list_display = ('route_name', )
+
 
 
 admin.site.register(Bus, BusAdmin)
 admin.site.register(Stop, StopAdmin)
 admin.site.register(Route, RouteAdmin)
 admin.site.register(Coordinate)
-admin.site.register(SpecialCoordinate)
+admin.site.register(SpecialCoordinate, SpecialCoAdmin)
+admin.site.register(TestCoordinate)

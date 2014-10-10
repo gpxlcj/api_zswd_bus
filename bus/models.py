@@ -15,8 +15,8 @@ class Coordinate(models.Model):
     longitude = models.FloatField(u'经度')
     latitude = models.FloatField(u'纬度')
     time = models.DateTimeField(u'时间', auto_now=True, blank=True)
-    bus_number = models.CharField(u'所属车辆', max_length=100, blank=True)
-    bus_route = models.CharField(u'所属路线', max_length=100, blank=True)
+    bus_number = models.CharField(u'所属车辆名称', max_length=100, blank=True)
+    bus_route = models.CharField(u'所属路线名称', max_length=100, blank=True)
     
     class Meta:
         verbose_name = u'坐标'
@@ -40,6 +40,7 @@ class SpecialCoordinate(models.Model):
 
     longitude = models.FloatField(u'经度')
     latitude = models.FloatField(u'纬度')
+    route_name = models.CharField(u'所属路线名称', max_length=100, blank=True)
 
     class Meta:
         verbose_name = u'特征点坐标'
