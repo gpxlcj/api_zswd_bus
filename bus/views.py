@@ -135,29 +135,33 @@ def get_bus_info(request):
         }
         return render_to_json(data)
     elif request.method == 'GET':
-        route_id = int(request.GET.get('route_id'))
-        route = Route.objects.get(id=route_id)
-        buses = Bus.objects.filter(route=route)
-        data = dict()
-        a = list()
-        num = 0
-        for i in buses:
-            temp = {
-                'id': i.number,
-                'route_id': route_id,
-                'longitude': i.coordinate.longitude,
-                'latitude': i.coordinate.latitude,
-                'stop': i.stop.name,
-                'arrive_time': i.stop.arrive_time,
-            }
-            num += 1
-            a.append(temp)
-        data = {
-            'status': 1,
-            'bus_info': a,
+        try:
+            route_id = int(request.GET.get('route_id'))
+            route = Route.objects.get(id=route_id)
+            buses = Bus.objects.filter(route=route)
+            data = dict()
+            a = list()
+            num = 0
+            for i in buses:
+                temp = {
+                    'id': i.number,
+                    'route_id': route_id,
+                    'longitude': i.coordinate.longitude,
+                    'latitude': i.coordinate.latitude,
+                    'stop': i.stop.name,
+                    'arrive_time': i.stop.arrive_time,
+                }
+                num += 1
+                a.append(temp)
+            data = {
+                'status': 1,
+                'bus_info': a,
             'num': num,
-        }
-        return render_to_json(data)
+            }
+            return render_to_json(data)
+        except:
+            status = return_status(0)
+            return render_to_json(status)
     else:
         status = {
             'status': 0
@@ -170,64 +174,76 @@ def get_bus_info(request):
 
 def return_user_position(request):
     if request.method == 'POST':
-        latitude = request.POST.get('latitude')
-        longitude = request.POST.get('longitude')
-        route_id = request.POST.get('route_id')
-        route = Route.objects.get(id=route_id)
-        stops = Stop.objects.filter(route=route)
-        distance = MAX_NUM
-        data = dict()
-        if stops.exists():
-            stop = stops[0]
-        for i in stops:
-            temp_distance = (i.latitude - latitude)**2+(i.longitude - longitude)**2
-            if temp_distance < distance:
-                distance = temp_distance
-                stop = i
-        stop_name = stop.name
-        stop_longitude = stop.longitude
-        stop_latitude = stop.latitude
-        stop_arrive_time = stop.arrive_time
-        data = {
-            'status': 1,
-            'name': stop_name,
-            'longitude': stop_longitude,
-            'latitdue': stop_latitude,
-            'arrive_time': stop_arrive_time,
-        }
-        return render_to_json(data)
-
-    elif request.method == 'GET':
-        latitude = request.GET.get('latitude')
-        longitude = request.GET.get('longitude')
-        route_id = request.GET.get('route_id')
-        route = Route.objects.get(id=route_id)
-        stops = Stop.objects.filter(route=route)
-        distance = MAX_NUM
-        data = dict()
-        if stops.exists():
-            stop = stops[0]
-        else:
+        try:
+            latitude = float(request.POST.get('latitude'))
+            longitude = float(request.POST.get('longitude'))
+            route_id = int(request.POST.get('route_id'))
+            route = Route.objects.get(id=route_id)
+            stops = Stop.objects.filter(route=route)
+            distance = MAX_NUM
+            data = dict()
+            if stops.exists():
+                stop = stops[0]
+            for i in stops:
+                temp_distance = (i.latitude - latitude)**2+(i.longitude - longitude)**2
+                if temp_distance < distance:
+                    distance = temp_distance
+                    stop = i
+            stop_name = stop.name
+            stop_longitude = stop.longitude
+            stop_latitude = stop.latitude
+            stop_arrive_time = stop.arrive_time
+            data = {
+                'status': 1,
+                'name': stop_name,
+                'longitude': stop_longitude,
+                'latitdue': stop_latitude,
+                'arrive_time': stop_arrive_time,
+            }
+            return render_to_json(data)
+        except:
             status = return_status(0)
             return render_to_json(status)
-        for i in stops:
-            temp_distance = (i.latitude - latitude)**2+(i.longitude - longitude)**2
-            if temp_distance < distance:
-                distance = temp_distance
-                stop = i
-        stop_name = stop.name
-        stop_longitude = stop.longitude
-        stop_latitude = stop.latitude
-        stop_arrive_time = stop.arrive_time
-        data = {
-            'status': 1,
-            'name': stop_name,
-            'longitude': stop_longitude,
-            'latitdue': stop_latitude,
-            'arrive_time': stop_arrive_time,
-        }
-        return render_to_json(data)
+
+    elif request.method == 'GET':
+        try:
+            latitude = float(request.GET.get('latitude'))
+            longitude = float(request.GET.get('longitude'))
+            route_id = int(request.GET.get('route_id'))
+            route = Route.objects.get(id=route_id)
+            stops = Stop.objects.filter(route=route)
+            distance = MAX_NUM
+            data = dict()
+            if stops.exists():
+                stop = stops[0]
+            else:
+                status = return_status(0)
+                return render_to_json({'dde':11})
+            for i in stops:
+                temp_distance = (i.latitude - latitude)**2+(i.longitude - longitude)**2
+                if temp_distance < distance:
+                    distance = temp_distance
+                    stop = i
+            stop_name = stop.name
+            stop_longitude = stop.longitude
+            stop_latitude = stop.latitude
+            stop_arrive_time = stop.arrive_time
+            data = {
+                'status': 1,
+                'name': stop_name,
+                'longitude': stop_longitude,
+                'latitdue': stop_latitude,
+                'arrive_time': stop_arrive_time,
+            }
+            return render_to_json(data)
+        except:
+            status = return_status(0)
+            return render_to_json(status)
     else:
         status = return_status(0)
         return render_to_json(status)
 
+#返回线路
+
+def return_route(request):
+    pass 
