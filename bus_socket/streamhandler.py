@@ -177,6 +177,9 @@ class BusStreamRequestHandler(StreamRequestHandler):
             longitude = transform_data['Lat']
         except:
             print 'error'
+        latitude =  float(latitude)
+        longitude = float(longitude)
+
         data = {
             'bus_number': bus_number,
             'latitude': latitude,
@@ -185,7 +188,7 @@ class BusStreamRequestHandler(StreamRequestHandler):
         print data
 
         #存储更新坐标数据
-        #self.save(data)
+        self.save(data)
 
         #测试坐标数据
         self.temp_save(data)
@@ -194,14 +197,19 @@ class BusStreamRequestHandler(StreamRequestHandler):
 
 
     def handle(self):
-
+        temp_data = str()
         while True:
             try:
-                data = self.request.recv(1024)
-                print len(data)
-                print "receive from (%r):%r" %(self.client_address, data)
-                self.packed_data = self.packdata(data)
-                self.judge_data_type()
+                if not data:
+                    temp_data += data
+                else:
+                    data = self.request.recv(1024)
+                    print len(data)
+                    print "receive from (%r):%r" %(self.client_address, data)
+                    self.packed_data = self.packdata(data)
+                    self.judge_data_type()
+                if temp_data:
+                    print temp_data
             except:
                 traceback.print_exc()
                 break
