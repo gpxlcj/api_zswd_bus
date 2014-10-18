@@ -47,12 +47,11 @@ class SpecialCoordinate(models.Model):
         verbose_name_plural = u'特征点坐标类'
 
     def __unicode__(self):
-        return "%d" % self.id
+        return "%s" % self.route_name
 
 #路线类
 class Route(models.Model):
 
-    id = models.PositiveIntegerField(u'路线id', unique=True, primary_key=True)
     departure_stop = models.CharField(u'始发站', max_length=30)
     final_stop = models.CharField(u'终点站', max_length=30)
     special_coordinate = models.OneToOneField(SpecialCoordinate, verbose_name=u'线路特征点')
@@ -69,7 +68,7 @@ class Stop(models.Model):
 
     
     name = models.CharField(u'名称', max_length=30)
-    route = models.ForeignKey(Route, verbose_name=u'路线', blank=True)
+    route = models.ForeignKey(Route, verbose_name=u'路线')
     longitude = models.FloatField(u'经度', default=0)
     latitude = models.FloatField(u'纬度', default=0)
     arrive_time = models.IntegerField(u'从始点到该站的时间', blank=True, default=0)
@@ -85,16 +84,16 @@ class Stop(models.Model):
 #校车类
 class Bus(models.Model):
     
-    route = models.ForeignKey(Route, verbose_name=u'路线', blank=True)
-    coordinate = models.OneToOneField(Coordinate, verbose_name=u'当前坐标', blank=True)
-    stop = models.ForeignKey(Stop, verbose_name=u'站点', blank=True)
+    route = models.ForeignKey(Route, verbose_name=u'路线')
+    coordinate = models.OneToOneField(Coordinate, verbose_name=u'当前坐标')
+    stop = models.ForeignKey(Stop, verbose_name=u'站点')
     number = models.CharField(max_length=100, verbose_name=u'车辆代号')
     class Meta:
         verbose_name = u'校车'
         verbose_name_plural = u'校车类'
 
     def __unicode__(self):
-        return "%d" % self.id
+        return "%s" % self.number
 
     def update_position(self, request):
 
