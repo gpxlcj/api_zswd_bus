@@ -230,10 +230,11 @@ class BusStreamRequestHandler(StreamRequestHandler):
                 if len(data)==0:
                     temp_data += data
                 else:
-         	    print "len(data): %d" % (len(data))
-	            print data
-		    self.packed_data = self.packdata(data)
-		    self.judge_data_type()
+            	    print "len(data): %d" % (len(data))
+                    print data
+                    self.packed_data = self.packdata(data)
+                    self.judge_data_type()
             except:
+                self.finish()
                 traceback.print_exc()
                 break
